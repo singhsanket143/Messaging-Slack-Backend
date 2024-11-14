@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 
 import {
   addChannelToWorkspaceService,
+  addMemberToWorkspace,
   createWorkspaceService
 } from '../services/workspaceService.js';
 import { successResponse } from '../utils/common/responseObjects.js';
@@ -27,4 +28,13 @@ export const createChannel = handleCallback(async (req, res) => {
   return res
     .status(StatusCodes.CREATED)
     .json(successResponse(channel, 'Channel created successfully'));
+});
+
+export const addMemberToworkspace = handleCallback(async (req, res) => {
+  const { workspaceId } = req.params;
+  const { username } = req.body;
+  const workspace = await addMemberToWorkspace(workspaceId, username);
+  return res
+    .status(StatusCodes.CREATED)
+    .json(successResponse(workspace, 'Member added successfully'));
 });

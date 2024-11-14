@@ -20,7 +20,6 @@ const workspaceRepository = {
         statusCode: StatusCodes.NOT_FOUND
       });
     }
-
     return workspace;
   },
   getWorkspaceByJoinCode: async function (joinCode) {
@@ -38,8 +37,13 @@ const workspaceRepository = {
 
     return workspace;
   },
-  addMemberToWorkspace: async function (workspaceId, memberId, role) {
+  addMemberToWorkspace: async function (
+    workspaceId,
+    username,
+    role = 'member'
+  ) {
     const workspace = await Workspace.findById(workspaceId);
+    console.log('WorkspaceData is here ========>', workspace);
 
     if (!workspace) {
       throw new ClientError({
@@ -48,8 +52,13 @@ const workspaceRepository = {
         statusCode: StatusCodes.NOT_FOUND
       });
     }
+    const userData = await User.findOne({ username });
+    console.log('Userdata is here ========>', userData);
 
+    const memberId = userData._id;
     const isValidUser = await User.findById(memberId);
+    console.log('Userdata is here ========>', isValidUser);
+
     if (!isValidUser) {
       throw new ClientError({
         explanation: 'Invalid data sent from the client',
@@ -59,7 +68,7 @@ const workspaceRepository = {
     }
 
     const isMemberAlreadyPartOfWorkspace = workspace.members.find(
-      (member) => member.memberId == memberId
+      (member) => member && member._id.toString() === memberId.toString()
     );
 
     if (isMemberAlreadyPartOfWorkspace) {
@@ -70,15 +79,19 @@ const workspaceRepository = {
       });
     }
 
+    console.log('Pushing member to workspace', workspace);
+
     workspace.members.push({
       memberId,
       role
     });
 
-    await workspace.save();
+    console.log('Saving workspace', workspace);
 
+    await workspace.save();
     return workspace;
   },
+
   addChannelToWorkspace: async function (workspaceId, channelName) {
     const workspace =
       await Workspace.findById(workspaceId).populate('channels');
@@ -90,7 +103,6 @@ const workspaceRepository = {
         statusCode: StatusCodes.NOT_FOUND
       });
     }
-
     const isChannelAlreadyPartOfWorkspace = workspace.channels.find(
       (channel) => channel.name === channelName
     );

@@ -23,3 +23,11 @@ export const addChannelToWorkspaceService = async (
   );
   return workspace;
 };
+
+export const addMemberToWorkspace = async (workspaceId, username) => {
+  const workspace = await workspaceRepository.addMemberToWorkspace(
+    workspaceId,
+    username
+  );
+  return workspace;
+};
