@@ -31,3 +31,14 @@ export const addMemberToWorkspace = async (workspaceId, username) => {
   );
   return workspace;
 };
+
+export const getWorkspaceByJoinCodeService = async (joinCode) => {
+  const workspace = await workspaceRepository.getWorkspaceByJoinCode(joinCode);
+  return workspace;
+};
+
+export const fetchAllWorkspaceByMemberId = async (memberId) => {
+  const workspaces =
+    await workspaceRepository.fetchAllWorkspaceByMemberId(memberId);
+  return workspaces;
+};

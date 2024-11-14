@@ -3,7 +3,9 @@ import { StatusCodes } from 'http-status-codes';
 import {
   addChannelToWorkspaceService,
   addMemberToWorkspace,
-  createWorkspaceService
+  createWorkspaceService,
+  fetchAllWorkspaceByMemberId,
+  getWorkspaceByJoinCodeService
 } from '../services/workspaceService.js';
 import { successResponse } from '../utils/common/responseObjects.js';
 import { handleCallback } from '../utils/common/tryCatchWrapper.js';
@@ -37,4 +39,20 @@ export const addMemberToworkspace = handleCallback(async (req, res) => {
   return res
     .status(StatusCodes.CREATED)
     .json(successResponse(workspace, 'Member added successfully'));
+});
+
+export const getWorkspaceByJoinCode = handleCallback(async (req, res) => {
+  const { joinCode } = req.params;
+  const workspace = await getWorkspaceByJoinCodeService(joinCode);
+  return res
+    .status(StatusCodes.CREATED)
+    .json(successResponse(workspace, 'Workspace found successfully'));
+});
+
+export const getWorkspaceByMemberId = handleCallback(async (req, res) => {
+  const { memberId } = req.params;
+  const workspace = await fetchAllWorkspaceByMemberId(memberId);
+  return res
+    .status(StatusCodes.CREATED)
+    .json(successResponse(workspace, 'Workspace found successfully'));
 });

@@ -34,7 +34,6 @@ const workspaceRepository = {
         statusCode: StatusCodes.NOT_FOUND
       });
     }
-
     return workspace;
   },
   addMemberToWorkspace: async function (
@@ -43,7 +42,6 @@ const workspaceRepository = {
     role = 'member'
   ) {
     const workspace = await Workspace.findById(workspaceId);
-    console.log('WorkspaceData is here ========>', workspace);
 
     if (!workspace) {
       throw new ClientError({
@@ -53,11 +51,9 @@ const workspaceRepository = {
       });
     }
     const userData = await User.findOne({ username });
-    console.log('Userdata is here ========>', userData);
 
     const memberId = userData._id;
     const isValidUser = await User.findById(memberId);
-    console.log('Userdata is here ========>', isValidUser);
 
     if (!isValidUser) {
       throw new ClientError({
@@ -124,8 +120,11 @@ const workspaceRepository = {
   },
   fetchAllWorkspaceByMemberId: async function (memberId) {
     const workspaces = await Workspace.find({
-      'members.memberId': memberId
-    }).populate('members.memberId', 'username email avatart');
+      $or: [
+        { 'members._id': memberId }, // For members with `_id` field
+        { 'members.memberId': memberId } // For members with `memberId` field
+      ]
+    }).populate('members.memberId', 'username email avatar');
 
     return workspaces;
   }
